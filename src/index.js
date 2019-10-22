@@ -17,6 +17,11 @@ app.use((req,res,next) => {
 */
 
 app.use(express.json());
+
+app.get('/',(req,res)=>{
+    res.send('welcome to my app');
+})
+
 app.use(userRouter);
 app.use(taskRouter);
 
