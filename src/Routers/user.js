@@ -8,12 +8,10 @@ const {sendWelcomeEmail} = require('../emails/account');
 
 const Router = express.Router();
 
-/*
-Router.get('/user/show',async (req,res) => {
-    const users = await UserModel.find();
-    res.send(users);
-})
-*/
+Router.get('/user/showAll',async (req,res)=>{
+    const users = await UserModel.find({});
+    res.status(200).send(users);
+});
 
 Router.post('/user/create',async (req,res) => {
     const userInfo = req.body;
@@ -23,10 +21,10 @@ Router.post('/user/create',async (req,res) => {
         const data = await user.save();
         const token = await user.generateAuthToken();
         sendWelcomeEmail(user.email,user.name);
-        res.send({data,token});
+        res.status(200).send({user: data,token});
     }
     catch(e){
-        res.send(e);
+        res.status(400).send(e);
     }
 });
 
@@ -37,7 +35,7 @@ Router.post('/user/login',async (req,res) => {
             throw new Error('unable to loggin');
         
         const token = await user.generateAuthToken();
-        res.send({user,token});
+        res.status(200).send({user,token});
     }
     catch(e){
         res.status(400).send(e + '');
@@ -46,7 +44,7 @@ Router.post('/user/login',async (req,res) => {
 
 Router.get('/user/myinfo',auth,async (req,res) => {
     const user = req.user;
-    res.send(user);
+    res.status(200).send(user);
 })
 
 //have to login to have authorize (token) to logout
@@ -112,7 +110,7 @@ Router.patch('/user/update/me',auth,async (req,res) => {
 Router.delete('/user/delete/me',auth,async (req,res) => {
     try{
         await req.user.remove();
-        res.send(req.user);
+        res.status(200).send(req.user);
     }
     catch(e){
         res.status(500).send(e + '');
@@ -149,8 +147,12 @@ Router.delete('/user/me/avatar',auth, async(req,res) => {
 Router.get('/user/:id/avatar',async (req,res) => {
     try{
         const user = await UserModel.findById(req.params.id);
-        if(!user || !user.avatar)
-            throw new Error('no user or no avatar');
+        if(!user )
+            throw new Error('no user');
+        if( !user.avatar){
+            throw new Error('no avatar');
+        }
+
         res.set('Content-Type','image/png');
         res.send(user.avatar);
     }

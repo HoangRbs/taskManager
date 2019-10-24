@@ -14,7 +14,7 @@ Router.post('/task/create',auth,async (req,res) => {
         res.send(data);
     }
     catch(e){
-        res.send(e);
+        res.status(500).send(e + '');
     }
 });
 
@@ -110,8 +110,10 @@ Router.delete('/task/delete/:id',auth,async (req,res) => {
             owner: req.user._id
         });
         
-        if(!task)
+        if(!task){
             res.status(404).send('task not found for current user');
+            return;
+        }
         res.send(task);
     }
     catch(e){

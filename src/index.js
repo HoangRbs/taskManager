@@ -1,40 +1,30 @@
-const express = require('express');
-const userRouter = require('./Routers/user');
-const taskRouter = require('./Routers/task');
+const app = require('./app');
 
-const app = express();
-require('./db/mongoose');
+const port = process.env.PORT||3000;
 
-//middleware
-/*
-app.use((req,res,next) => {
-    if(req.method == 'GET'){
-        res.send('get req is disabled');
-    }else{
-        next();
-    }
-});
-*/
-
-app.use(express.json());
-
-app.get('/',(req,res)=>{
-    res.send('welcome to my app');
-})
-
-app.use(userRouter);
-app.use(taskRouter);
-
-const port = process.env.PORT || 3000;
-
-app.listen(port,() => {
+const server = app.listen(port,() => {
     console.log('listenning on port ',port);
 });
 
+module.exports = server;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 const {TaskModel} = require('./models/task');
 const {UserModel} = require('./models/user');
 
-/*
 const main = async() =>{
    const user = await UserModel.findById('5da9d4f0df59971e60d35501');
    await user.populate('tasks').execPopulate();
